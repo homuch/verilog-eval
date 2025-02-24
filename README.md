@@ -4,6 +4,13 @@ This is an evaluation harness for the VerilogEval problem solving dataset origin
 
 **If you would like to benchmark against the original VerilogEval 1.0 harness, please checkout Git branch "release/1.0.0" which has been kept to preserve this original benchmark. Otherwise, the main branch can be used for the improved harness.**
 
+## Ways to run manual model
+
+1. `podman build -t verilog-eval -f Dockerfile .`
+2. Run the script `run-podman.sh` to run the benchmark in a container.
+3. Manually solve all problems in the dataset.
+4. Rerun the script `run-podman.sh` to complete the benchmark.
+
 ### VerilogEvalV2 with Reframed Prompts and New Scripts
 
 This repo contains the original VerilogEval dataset with reframed prompts
@@ -53,7 +60,7 @@ You will also need the following Python packages:
 
 We plan to provide a Dockerfile and backwards compatibility mode with a prebuilt jsonl soon.
 
-### Usage 
+### Usage
 
 The evalution harness is run using make and various evaluation parameters can be set as below:
 
@@ -69,7 +76,7 @@ Available tasks are `code-complete-iccad2023` and `spec-to-rtl` with each refere
 
 Valid models are listed at the top of `scripts/sv-generate`. The number of in-context learning examples can be between 0-4, and given with `--with-examples`. Samples to collect per problem are given by `--with-samples`. Finally, model temperature and top_p can be set to --with-temperature and --with-top-p, respectively.
 
-These parameters can be easily swept with a shell script, to create separate build directories for each evaluation harness configuration target. 
+These parameters can be easily swept with a shell script, to create separate build directories for each evaluation harness configuration target.
 
 ## Citation
 
@@ -77,13 +84,13 @@ For this VerilogEval v2, please cite the following paper:
 
 ```
 @misc{pinckney2024revisitingverilogevalnewerllms,
-      title={Revisiting VerilogEval: Newer LLMs, In-Context Learning, and Specification-to-RTL Tasks}, 
+      title={Revisiting VerilogEval: Newer LLMs, In-Context Learning, and Specification-to-RTL Tasks},
       author={Nathaniel Pinckney and Christopher Batten and Mingjie Liu and Haoxing Ren and Brucek Khailany},
       year={2024},
       eprint={2408.11053},
       archivePrefix={arXiv},
       primaryClass={cs.SE},
-      url={https://arxiv.org/abs/2408.11053}, 
+      url={https://arxiv.org/abs/2408.11053},
 }
 ```
 
@@ -93,7 +100,7 @@ For the original VerilogEval v1, please use:
 @inproceedings{liu2023verilogeval,
   title={{VerilogEval:} Evaluating Large Language Models for Verilog Code Generation},
   author={Liu, Mingjie and Pinckney, Nathaniel and Khailany, Brucek and Ren, Haoxing},
-  booktitle={2023 IEEE/ACM International Conference on Computer-Aided Design (ICCAD)}, 
+  booktitle={2023 IEEE/ACM International Conference on Computer-Aided Design (ICCAD)},
   year={2023}
 }
 ```

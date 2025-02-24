@@ -1,0 +1,12 @@
+[project]
+name = "verilog-eval"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11, <3.12"
+dependencies = [
+    "langchain>=0.3.19",
+    "langchain-community>=0.3.18",
+    "langchain-nvidia-ai-endpoints>=0.3.9",
+    "langchain-openai>=0.3.6",
+]
