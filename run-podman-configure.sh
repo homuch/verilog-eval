@@ -3,13 +3,7 @@
 SCRIPT_REALPATH=$(realpath "$0")
 SCRIPT_DIR_REAL=$(dirname "$SCRIPT_REALPATH")
 
-task="code-complete-iccad2023"
-model="manual-rtl-coder"
-# model_path="/llm-models/RTLCoder-Deepseek-v1.1.Q4_K_S.gguf"
-shots=0 # 0~3
-samples=1
-temperature=0.8
-top_p=0.95
+source $SCRIPT_DIR_REAL/configurations.sh
 
 mkdir -p $SCRIPT_DIR_REAL/build
 

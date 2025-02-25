@@ -1,6 +1,7 @@
 from re import fullmatch
 from llama_cpp import Llama
 from tqdm import tqdm
+import re
 import sys
 import argparse
 from constants import MODEL_PATH_DICT, BUILD_PATH, DATASET_PATH_PREFIX
@@ -19,6 +20,9 @@ def load_prompt(prompt_file_prefix):
     with open(f"{prompt_file_prefix}_systemprompt.txt", "r") as f:
         system_prompt = f.read()
     return full_prompt, system_prompt
+
+def clean_thinking_prompt(content):
+    return re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL)
 
 def main():
     #  -v --verbose        Display the prompt
@@ -56,7 +60,7 @@ def main():
         temperature=args.temperature,
         n_gpu_layers=n_gpu_layers,
         n_batch=n_batch,
-        n_ctx=2048,
+        n_ctx=8192,
         max_tokens=args.max_tokens
     )
     if args.test:
@@ -75,6 +79,10 @@ def main():
             messages=msgs
         )
         print(resp)
+
+        content = resp["choices"][0]["message"]["content"]
+        content = clean_thinking_prompt(content)
+        print(content)
         sys.exit(0)
     else:
         print("Running in production mode.")
@@ -100,6 +108,7 @@ def main():
             )
 
             resp_str = resp["choices"][0]["message"]["content"]
+            resp_str = clean_thinking_prompt(resp_str)
 
             with open(f"{prompt_file_prefix}_response.txt", "w") as f:
                 f.write(resp_str)

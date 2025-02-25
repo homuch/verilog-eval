@@ -1,5 +1,5 @@
 FROM ghcr.io/astral-sh/uv:debian
-RUN apt-get update && apt-get install -y git wget util-linux
+RUN apt-get update && apt-get install -y git wget util-linux bsdmainutils
 RUN apt-get install -y autoconf gperf make gcc g++ bison flex
 
 WORKDIR /root

@@ -7,9 +7,12 @@ This is an evaluation harness for the VerilogEval problem solving dataset origin
 ## Ways to run manual model
 
 1. `podman build -t verilog-eval -f Dockerfile .`
-2. Run the script `run-podman.sh` to run the benchmark in a container.
-3. Manually solve all problems in the dataset.
-4. Rerun the script `run-podman.sh` to complete the benchmark.
+2. `podman build -t llamacpp-build -f manual-run_llama-cpp/llamacpp-build.Dockerfile .`
+3. Run the script `run-podman-configure.sh` to run the benchmark in a container.
+4. Run the script `run-podman-make.sh` to run the benchmark in a container.
+5. `rm build/Prob*/*.sv`
+3. Manually solve all problems in the dataset. (`run-podman-llamacpp.sh`)
+4. Rerun the script `run-podman-make.sh` to complete the benchmark.
 
 ### VerilogEvalV2 with Reframed Prompts and New Scripts
 

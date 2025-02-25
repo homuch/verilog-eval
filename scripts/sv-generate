@@ -99,7 +99,8 @@ nim_chat_models = [
 manual_models = [
   'manual-rtl-coder',
   'manual-deepseek-coder-6.7b',
-  'manual-deepseek-coder-33b'
+  'manual-deepseek-coder-33b',
+  'manual-deepseek-r1-distill-qwen-7b'
 ]
 
 model_aliases = {

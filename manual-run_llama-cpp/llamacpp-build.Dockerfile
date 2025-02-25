@@ -24,8 +24,12 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Install depencencies
 RUN /app/.venv/bin/pip install --upgrade cmake setuptools
+
 # Install llama-cpp-python (build with cuda)
-RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=86" FORCE_CMAKE=1 \
+# 75: Turing architecture (RTX 2060)
+# 80: Ampere architecture
+# 86: Ampere architecture (newer GPUs)
+RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=\"75;80;86\"" FORCE_CMAKE=1 \
     /app/.venv/bin/pip install llama-cpp-python
 
 RUN /app/.venv/bin/pip install langchain langchain-community langchain-nvidia-ai-endpoints langchain-openai

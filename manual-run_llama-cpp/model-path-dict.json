@@ -1,3 +1,4 @@
 {
-  "manual-rtl-coder": "/llm-models/RTLCoder-Deepseek-v1.1.Q4_K_M.gguf"
+  "manual-rtl-coder": "/llm-models/RTLCoder-Deepseek-v1.1.Q4_K_S.gguf",
+  "manual-deepseek-r1-distill-qwen-7b": "/llm-models/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf"
 }
