@@ -1,3 +1,6 @@
 .venv/
 .git/
 Dockerfile
+
+build*/
+autom4te.cache/

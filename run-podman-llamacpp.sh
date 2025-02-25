@@ -14,13 +14,11 @@ top_p=0.95
 mkdir -p $SCRIPT_DIR_REAL/build
 
 podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
-    --volume $SCRIPT_DIR_REAL/build:/app/build \
-    verilog-eval \
-    sh -c "../configure \
-        --with-task=$task \
-        --with-model=$model \
-        --with-examples=$shots \
-        --with-samples=$samples \
-        --with-temperature=$temperature \
-        --with-top-p=$top_p \
-    && make --jobs=1"
+    --volume $SCRIPT_DIR_REAL/../llm-models:/llm-models \
+    --volume $SCRIPT_DIR_REAL/build:/build \
+    llamacpp-build \
+    python3 manual-run.py \
+        --task=$task \
+        --model=$model \
+        --temperature=$temperature \
+        --top_p=$top_p
