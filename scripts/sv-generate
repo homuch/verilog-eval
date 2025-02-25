@@ -34,7 +34,8 @@ from collections import namedtuple
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_openai import ChatOpenAI
 from langchain.schema   import SystemMessage, HumanMessage
-from langchain.callbacks import get_openai_callback
+# from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks.manager import get_openai_callback
 
 #-------------------------------------------------------------------------
 # Command line processing
@@ -371,6 +372,7 @@ def main():
       print( system_msg, file=output_prompt_file )
   else:
     # should never reach here
+    assert False, "Invalid model"
     return
 
   if model not in manual_models:
@@ -486,7 +488,7 @@ def main():
           if line.strip().startswith("endmodule"):
             line = line.rsplit('endmodule', 1)[0] + "\n" + "endmodule"
         print( line, file=file )
-      
+
     print( "", file=file )
 
     if backticks_count == 1 or backticks_count > 2:
@@ -606,7 +608,7 @@ def main():
             if line.strip().startswith("endmodule"):
               line = line.rsplit('endmodule', 1)[0] + "\n" + "endmodule"
           print( line, file=file )
-        
+
       print( "", file=file )
 
       # found_code_lines = []
@@ -633,7 +635,7 @@ def main():
       #   # <CODE></CODE> correctly
 
       #   print( "", file=file )
-        
+
       comment_delim = "//"
       print( comment_delim + " VERILOG-EVAL: response did not use <CODE></CODE> correctly", file=file )
 

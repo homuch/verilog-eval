@@ -56,6 +56,7 @@ def main():
         temperature=args.temperature,
         n_gpu_layers=n_gpu_layers,
         n_batch=n_batch,
+        n_ctx=2048,
         max_tokens=args.max_tokens
     )
     if args.test:
@@ -77,8 +78,12 @@ def main():
         sys.exit(0)
     else:
         print("Running in production mode.")
-
+    # start_from = 120
+    # n=0
     for task in tqdm(task_list):
+        # if n < start_from:
+        #     n += 1
+        #     continue
         for sample in range(1, samples_num + 1):
             prompt_file_prefix = f"{BUILD_PATH}/{task}/{task}_sample{sample:02d}"
             full_prompt, system_msg = load_prompt(prompt_file_prefix)

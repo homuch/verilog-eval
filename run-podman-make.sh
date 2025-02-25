@@ -16,11 +16,10 @@ mkdir -p $SCRIPT_DIR_REAL/build
 podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
     --volume $SCRIPT_DIR_REAL/build:/app/build \
     verilog-eval \
-    sh -c "../configure \
-        --with-task=$task \
-        --with-model=$model \
-        --with-examples=$shots \
-        --with-samples=$samples \
-        --with-temperature=$temperature \
-        --with-top-p=$top_p \
-    && make --jobs=1"
+    make --jobs=1 all
+    # python3 /app/build/../scripts/sv-generate \
+    # "--model=manual-rtl-coder" "--examples=0" "--task=code-complete-iccad2023" \
+    # "--temperature=0.8" "--top-p=0.95" \
+    # --verbose \
+    # --output Prob154_fsm_ps2data/Prob154_fsm_ps2data_sample01.sv \
+    # /app/build/../dataset_code-complete-iccad2023/Prob154_fsm_ps2data_prompt.txt
