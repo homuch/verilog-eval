@@ -41,6 +41,7 @@ def main():
     # task = ["code-complete-iccad20", "spec-to-rtl"]
     argparser.add_argument("--task", type=str, choices=["code-complete-iccad2023", "spec-to-rtl"], default="code-complete-iccad2023")
     argparser.add_argument("--test", action="store_true", default=False)
+    argparser.add_argument("--samples", type=int, default=1)
 
     args = argparser.parse_args()
 
@@ -51,7 +52,7 @@ def main():
         sys.exit(1)
 
     task_list = get_tasks(args.task)
-    samples_num = 1
+    samples_num = args.samples
 
     llm = Llama(
         model_path=model_path,
@@ -60,7 +61,7 @@ def main():
         temperature=args.temperature,
         n_gpu_layers=n_gpu_layers,
         n_batch=n_batch,
-        n_ctx=8192,
+        n_ctx=2048,
         max_tokens=args.max_tokens
     )
     if args.test:

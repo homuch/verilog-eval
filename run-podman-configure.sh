@@ -7,8 +7,7 @@ source $SCRIPT_DIR_REAL/configurations.sh
 
 mkdir -p $SCRIPT_DIR_REAL/build
 
-podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
-    --volume $SCRIPT_DIR_REAL/build:/app/build \
+podman run --rm --volume $SCRIPT_DIR_REAL/build:/app/build:z \
     verilog-eval \
     ../configure \
         --with-task=$task \

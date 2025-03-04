@@ -100,7 +100,9 @@ manual_models = [
   'manual-rtl-coder',
   'manual-deepseek-coder-6.7b',
   'manual-deepseek-coder-33b',
-  'manual-deepseek-r1-distill-qwen-7b'
+  'manual-deepseek-r1-distill-qwen-7b',
+  'manual-deepseek-r1-distill-qwen-1.5b',
+  'manual-qwen2.5-coder-7b'
 ]
 
 model_aliases = {

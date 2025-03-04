@@ -11,6 +11,7 @@ echo "model: $model"
 echo "temperature: $temperature"
 echo "top_p: $top_p"
 echo "max_tokens: $max_tokens"
+echo "samples: $samples"
 
 mkdir -p $SCRIPT_DIR_REAL/build
 
@@ -23,4 +24,5 @@ podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
         --model=$model \
         --temperature=$temperature \
         --top_p=$top_p \
-        --max_tokens=$max_tokens
+        --max_tokens=$max_tokens \
+        --samples=$samples

@@ -13,8 +13,7 @@ SCRIPT_DIR_REAL=$(dirname "$SCRIPT_REALPATH")
 
 mkdir -p $SCRIPT_DIR_REAL/build
 
-podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable \
-    --volume $SCRIPT_DIR_REAL/build:/app/build \
+podman run --rm --volume $SCRIPT_DIR_REAL/build:/app/build:z \
     verilog-eval \
     make -j$(nproc)
     # python3 /app/build/../scripts/sv-generate \
