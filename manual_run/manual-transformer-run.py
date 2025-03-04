@@ -1,13 +1,10 @@
 from re import fullmatch
-from llama_cpp import Llama
+from transformer_model import SimpleModelInference
 from tqdm import tqdm
 import re
 import sys
 import argparse
 from constants import MODEL_PATH_DICT, BUILD_PATH, DATASET_PATH_PREFIX
-n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
-n_batch = 512  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-
 
 def get_tasks(task_name):
     assert task_name in ["code-complete-iccad2023", "spec-to-rtl"], f"Unknown task '{task_name}'"
@@ -20,9 +17,6 @@ def load_prompt(prompt_file_prefix):
     with open(f"{prompt_file_prefix}_systemprompt.txt", "r") as f:
         system_prompt = f.read()
     return full_prompt, system_prompt
-
-def clean_thinking_prompt(content):
-    return re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL)
 
 def main():
     #  -v --verbose        Display the prompt
@@ -53,17 +47,7 @@ def main():
 
     task_list = get_tasks(args.task)
     samples_num = args.samples
-
-    llm = Llama(
-        model_path=model_path,
-        # top_k=10,
-        top_p=args.top_p,
-        temperature=args.temperature,
-        n_gpu_layers=n_gpu_layers,
-        n_batch=n_batch,
-        n_ctx=2048,
-        max_tokens=args.max_tokens
-    )
+    llm = SimpleModelInference(model_path)
     if args.test:
         print("Running in test mode.")
         print("task list:")
@@ -76,14 +60,14 @@ def main():
             {"role": "system", "content": system_msg},
             {"role": "user", "content": full_prompt},
         ]
-        resp = llm.create_chat_completion(
-            messages=msgs
+        resp = llm.inference(
+            messages=msgs,
+            max_tokens=args.max_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            remove_thinking=True
         )
         print(resp)
-
-        content = resp["choices"][0]["message"]["content"]
-        content = clean_thinking_prompt(content)
-        print(content)
         sys.exit(0)
     else:
         print("Running in production mode.")
@@ -104,12 +88,15 @@ def main():
                     "content": full_prompt,
                 },
             ]
-            resp = llm.create_chat_completion(
-                messages=msgs
+            resp = llm.inference(
+                messages=msgs,
+                max_tokens=args.max_tokens,
+                temperature=args.temperature,
+                top_p=args.top_p,
+                remove_thinking=True
             )
 
-            resp_str = resp["choices"][0]["message"]["content"]
-            resp_str = clean_thinking_prompt(resp_str)
+            resp_str = resp
 
             with open(f"{prompt_file_prefix}_response.txt", "w") as f:
                 f.write(resp_str)
