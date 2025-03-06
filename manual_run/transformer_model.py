@@ -54,22 +54,11 @@ class SimpleModelInference:
             max_new_tokens=max_tokens
         )
 
-        # Decode
+        # Decode (only preserve output)
         generated_text = self.tokenizer.decode(
-            output[0],
+            output[0, inputs.shape[1]:],
             skip_special_tokens=True
         )
-
-        # Attempt to remove the initial system prompt from the final output
-        # by splitting on the system content and slicing accordingly.
-        system_content = messages[0]["content"]
-        # We split the *generated* text on the system content ...
-        parts_after_system = generated_text.split(system_content)
-        # ... and also split the *input* text on that same content to see how long it was.
-        parts_input = input_text.split(system_content)
-        if len(parts_after_system) > 1 and len(parts_input) > 1:
-            # Slice off the portion corresponding to the system prompt length
-            generated_text = parts_after_system[-1][len(parts_input[-1]):]
 
         # Optionally remove any '<think>' block
         if remove_thinking:
