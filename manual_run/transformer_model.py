@@ -51,6 +51,7 @@ class SimpleModelInference:
             do_sample=do_sample,
             temperature=temperature,
             top_p=top_p,
+            top_k=None,
             max_new_tokens=max_tokens
         )
 
