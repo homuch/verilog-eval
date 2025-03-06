@@ -89,14 +89,19 @@ endif
 
 ifndef ECHO
 
-# Do a dry run of make with with given targets and count number of
-# times we see HIT_MARK which shows up for every instance of ECHO
+# Use shell function with Make 3.82 compatible evaluation
+# Replace != operator with shell function evaluation
+# Protect the MAKE variable with another level of $ to avoid premature expansion
 
-HIT_TOTAL != $(MAKE) $(MAKECMDGOALS) --dry-run ECHO="HIT_MARK" | grep -c "HIT_MARK"
+HIT_TOTAL := $(shell $(MAKE) $(MAKECMDGOALS) --dry-run ECHO="HIT_MARK" | grep -c "HIT_MARK")
 
-# Create a counter which will increment every instance of ECHO
+# Create a counter - Make 3.82 compatible approach
+HIT_N := 0
+define inc_hit_count
+  HIT_N := $(shell expr $(HIT_N) + 1)
+endef
 
-HIT_COUNT = $(eval HIT_N != expr $(HIT_N) + 1)$(HIT_N)
+HIT_COUNT = $(eval $(call inc_hit_count))$(HIT_N)
 
 # Create the output counter
 
@@ -117,8 +122,10 @@ endif
 define problem_template
 
 # Figure out number of samples for this problem
+# Make 3.82 has issues with nested variable expansion in shell commands
+# We need to use a different approach to expand the variable correctly
 
-sample_num_strs != seq --format "%02g" 1 $$($(1)_num_samples)
+sample_num_strs := $(shell seq --format "%02g" 1 $($(1)_num_samples))
 
 # Generate verilog samples
 
@@ -210,8 +217,7 @@ junk += summary.txt summary.csv
 #-------------------------------------------------------------------------
 # Save the generated code and logs so that we can rerun experiments
 # without having to regenerate all of the generated code with an LLM.
-# We use the special $(file make function because the number of files
-# can be so large that it might exceed the command line limit.
+# Replace the file function with a shell script approach
 
 pregen_dir := ../../pymtl-eval-pregen
 
@@ -223,12 +229,10 @@ extra_pregen_files = \
 
 ifneq ($(pregen_dir),NOT_ENABLED)
 pregen: $(sv_samples)
-	$(file >  files-to-copy.txt, $(pregen_files))
-	$(file >> files-to-copy.txt, $(extra_pregen_files))
-	sed -i.bak -e 's/ \+/\n/g' files-to-copy.txt
+	@echo $(pregen_files) $(extra_pregen_files) | tr ' ' '\n' > files-to-copy.txt
 	rsync --files-from=files-to-copy.txt . \
     $(pregen_dir)/$(shell date '+%Y-%m-%d-%H-%M')
-	rm files-to-copy.txt files-to-copy.txt.bak
+	rm files-to-copy.txt
 else
 pregen:
 	@echo "ERROR: pregen directory was not set with configure"
