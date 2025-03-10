@@ -102,7 +102,9 @@ manual_models = [
   'manual-deepseek-coder-33b',
   'manual-deepseek-r1-distill-qwen-7b',
   'manual-deepseek-r1-distill-qwen-1.5b',
-  'manual-qwen2.5-coder-7b'
+  'manual-qwen2.5-coder-7b',
+  'manual-codev-qw-7b',
+  'manual-qwq'
 ]
 
 model_aliases = {
