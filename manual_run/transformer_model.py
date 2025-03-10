@@ -1,13 +1,9 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import pipeline
 
 class SimpleModelInference:
     def __init__(self, model_path):
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16
-        ).to("cuda")
+        self.pipe = pipeline("text-generation", model=model_path)
 
     def inference(self, messages, temperature=0, top_p=0.95, max_tokens=1024, remove_thinking=True):
         """
@@ -28,37 +24,19 @@ class SimpleModelInference:
         do_sample = (temperature != 0)
         top_p = top_p if do_sample else None
         temperature = temperature if do_sample else None
+        top_k = None
+        generate_kwargs = {
+            "do_sample": do_sample,
+            "top_p": top_p,
+            "temperature": temperature,
+            "top_k": top_k,
+            "max_new_tokens": max_tokens
+        }
+        outputs = self.pipe(messages, **generate_kwargs)
+        assert outputs[0]["generated_text"][-1]["role"] == "assistant"
+        generated_text = outputs[0]["generated_text"][-1]["content"]
 
-        # Ensure first message is 'system'
-        assert messages[0]["role"] == "system"
-
-        # Prepare inputs (these are presumably custom methods in your code)
-        input_text = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True
-        )
-        inputs = self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=True,
-            return_tensors="pt",
-            add_generation_prompt=True
-        ).to("cuda")
-
-        # Generate output
-        output = self.model.generate(
-            inputs,
-            do_sample=do_sample,
-            temperature=temperature,
-            top_p=top_p,
-            max_new_tokens=max_tokens
-        )
-
-        # Decode (only preserve output)
-        generated_text = self.tokenizer.decode(
-            output[0, inputs.shape[1]:],
-            skip_special_tokens=True
-        )
+        generated_text = generated_text.replace("<|EOT|>", "").strip()
 
         # Optionally remove any '<think>' block
         if remove_thinking:
