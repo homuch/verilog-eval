@@ -7,5 +7,7 @@ export samples=3
 export temperature=0.8
 export top_p=0.95
 export max_tokens=1024
+export model_runner="transformer"
+export remove_system_prompt="False"
 
 export IVERILOG_PATH="/path/to/iverilog"

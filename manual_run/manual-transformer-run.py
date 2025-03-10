@@ -1,5 +1,6 @@
 from re import fullmatch
-from transformer_model import SimpleModelInference
+from transformer_model import SimpleModelInference as SimpleModelInference_transformer
+from vllm_model import SimpleModelInference as SimpleModelInference_vllm
 from tqdm import tqdm
 import re
 import sys
@@ -26,6 +27,7 @@ def main():
     #  -p --top-p          LLM model top_p (default: 0.95)
     #  -n --max-tokens     LLM model max_tokens (default: 1024)
     #     --task           Task to prompt (default: code-complete-iccad2023)
+    # --add_system_prompt
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--model", type=str, required=True)
     argparser.add_argument("--top_k", type=int, default=10)
@@ -36,8 +38,19 @@ def main():
     argparser.add_argument("--task", type=str, choices=["code-complete-iccad2023", "spec-to-rtl"], default="code-complete-iccad2023")
     argparser.add_argument("--test", action="store_true", default=False)
     argparser.add_argument("--samples", type=int, default=1)
+    argparser.add_argument("--remove_system_prompt", type=str, choices=["True", "False"], default="False")
+    argparser.add_argument("--model_runner", type=str, choices=["transformer", "vllm"], default="transformer")
 
     args = argparser.parse_args()
+
+    if args.model_runner == "transformer":
+        SimpleModelInference = SimpleModelInference_transformer
+        print("Using transformer model runner")
+    elif args.model_runner == "vllm":
+        SimpleModelInference = SimpleModelInference_vllm
+        print("Using vllm model runner")
+    else:
+        raise ValueError(f"Invalid model runner: {args.model_runner}")
 
     try:
         model_path = MODEL_PATH_DICT[args.model]
@@ -48,18 +61,26 @@ def main():
     task_list = get_tasks(args.task)
     samples_num = args.samples
     llm = SimpleModelInference(model_path)
+    remove_system_prompt = True if args.remove_system_prompt == "True" else False
+    add_system_prompt = not remove_system_prompt
     if args.test:
         print("Running in test mode.")
         print("task list:")
         print(task_list)
         print("testing llama cpp:")
         system_msg = "You are a story writing assistant."
-        full_prompt = "Write a story about llamas."
-        system_prompt = system_msg
-        msgs = [
-            {"role": "system", "content": system_msg},
-            {"role": "user", "content": full_prompt},
-        ]
+        user_msg = "Write a story about llamas."
+
+        if add_system_prompt:
+            msgs = [
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
+            ]
+        else:
+            msgs = [
+                {"role": "user", "content": system_msg + '\n\n' + user_msg},
+            ]
+
         resp = llm.inference(
             messages=msgs,
             max_tokens=args.max_tokens,
@@ -81,13 +102,22 @@ def main():
             prompt_file_prefix = f"{BUILD_PATH}/{task}/{task}_sample{sample:02d}"
             full_prompt, system_msg = load_prompt(prompt_file_prefix)
 
-            msgs = [
-                {"role": "system", "content": system_msg},
-                {
-                    "role": "user",
-                    "content": full_prompt,
-                },
-            ]
+            if add_system_prompt:
+                msgs = [
+                    {"role": "system", "content": system_msg},
+                    {
+                        "role": "user",
+                        "content": full_prompt,
+                    },
+                ]
+            else:
+                msgs = [
+                    {
+                        "role": "user",
+                        "content": system_msg + '\n\n' + full_prompt,
+                    },
+                ]
+
             resp = llm.inference(
                 messages=msgs,
                 max_tokens=args.max_tokens,
